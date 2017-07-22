@@ -5,7 +5,7 @@ Plugin URI: https://wpjobmanager.com/
 Description: Adds GBP Salary field to the frontend, backend & search for WP Job Manager.
 Version: 1.0
 Author: danielmcclure
-Author https://github.com/danielmcclure/wp-job-manager-salary-field
+Author URI: https://github.com/danielmcclure/wp-job-manager-salary-field
 Requires at least: 4.1
 Tested up to: 4.8
 Text Domain: wp-job-manager
@@ -16,56 +16,53 @@ Domain Path: /languages
 	License URI: http://www.gnu.org/licenses/gpl-3.0.html
 */
 
-// Add your own function to filter the fields in admin
+// Adds function to filter the fields in admin
 add_filter( 'job_manager_job_listing_data_fields', 'admin_add_salary_field' );
 
-    // Here we create the function for this custom field in admin  
-    function admin_add_salary_field( $fields ) {
-  $fields['_job_salary'] = array(
-    'label'       => __( 'Salary (£)', 'job_manager' ),
-    'type'        => 'text',
-    'placeholder' => 'e.g. 20000',
-    'description' => ''
-  );
-  return $fields;
+// Create the function for this custom field in admin  
+function admin_add_salary_field( $fields ) {
+	$fields['_job_salary'] = array(
+		'label'       => __( 'Salary (£)', 'job_manager' ),
+	    'type'        => 'text',
+	    'placeholder' => 'e.g. 20000',
+	    'description' => ''
+	);
+		
+	return $fields;
 }
 
-// Add your own function to filter the fields in frontend
+// Adds function to filter the fields in frontend
 add_filter( 'submit_job_form_fields', 'frontend_add_salary_field' );
 
-    // Here we create the function for this custom field in frontend
+// Create the function for this custom field in frontend
 function frontend_add_salary_field( $fields ) {
-  $fields['job']['job_salary'] = array(
-    'label'       => __( 'Salary (£)', 'job_manager' ),
-    'type'        => 'text',
-    'required'    => true,
-    'placeholder' => 'e.g. 20000',
-    'priority'    => 7
-  );
-  return $fields;
+	$fields['job']['job_salary'] = array(
+	    'label'       => __( 'Salary (£)', 'job_manager' ),
+	    'type'        => 'text',
+	    'required'    => true,
+	    'placeholder' => 'e.g. 20000',
+	    'priority'    => 7
+  	);
+  	
+  	return $fields;
 }
 
-// Add your salary field to display on single job page
+// Add salary field to display on single job page
 add_action( 'single_job_listing_meta_end', 'display_job_salary_data' );
 
-    // Here we create the function for this custom field to display on single job page 
-   function display_job_salary_data() {
-  global $post;
+// Create the function for this custom field to display on single job page 
+function display_job_salary_data() {
+	global $post;
 
-  $salary = get_post_meta( $post->ID, '_job_salary', true );
+	$salary = get_post_meta( $post->ID, '_job_salary', true );
 
-  if ( $salary ) {
-    echo '<li>' . __( 'Salary:' ) . ' £' . esc_html( $salary ) . '</li>';
-  }
+	if ( $salary ) {
+		echo '<li><i class="fa fa-money"></i><div><strong>' . __( 'Salary (GBP):' ) . '</strong><br/><span>' . esc_html( $salary ) . '</span></div></li>';
+	}
 }
 
-/**
- * This can either be done with a filter (below) or the field can be added directly to the job-filters.php template file!
- *
- * job-manager-filter class handling was added in v1.23.6
- */
+// Add Search by Salary Field
 add_action( 'job_manager_job_filters_search_jobs_end', 'filter_by_salary_field' );
-
 function filter_by_salary_field() {
 	?>
 	<div class="search_categories">
@@ -81,9 +78,7 @@ function filter_by_salary_field() {
 	<?php
 }
 
-/**
- * Adds Salary Search Functionality as per https://wpjobmanager.com/document/tutorial-adding-a-salary-field-for-jobs/
- */
+// Adds Salary Filter Functionality as per https://wpjobmanager.com/document/tutorial-adding-a-salary-field-for-jobs/
 add_filter( 'job_manager_get_listings', 'filter_by_salary_field_query_args', 10, 2 );
 function filter_by_salary_field_query_args( $query_args, $args ) {
 	if ( isset( $_POST['form_data'] ) ) {
